@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -28,6 +29,7 @@ public class DrawShapes extends JFrame
     private enum ShapeType {
         SQUARE,
         CIRCLE,
+        OVAL,
         RECTANGLE
     }
     
@@ -36,6 +38,9 @@ public class DrawShapes extends JFrame
     private ShapeType shapeType = ShapeType.SQUARE;
     private Color color = Color.RED;
     private Point startDrag;
+    private boolean israndomized=false; 
+    Random rand = new Random();
+ 
 
 
     public DrawShapes(int width, int height)
@@ -75,15 +80,35 @@ public class DrawShapes extends JFrame
                 
                 if (e.getButton()==MouseEvent.BUTTON1) { 
                     if (shapeType == ShapeType.SQUARE) {
-                        scene.addShape(new Square(color, 
-                                e.getX(), 
-                                e.getY(),
-                                100));
+                    	 if (!israndomized)
+                         	scene.addShape(new Square(color,
+                                     e.getPoint(),
+                                     100));
+                            if (israndomized)
+                            	scene.addShape(new Square(color,
+                                        e.getPoint(),
+                                        (int) (100*(Math.floor(Math.random()*(200-0+1)+0)/100))));
+                         
                     } else if (shapeType == ShapeType.CIRCLE){
-                        scene.addShape(new Circle(color,
+                    	 if (!israndomized)
+                         	scene.addShape(new Circle(color,
+                                     e.getPoint(),
+                                     100));
+                            if (israndomized)
+                            	scene.addShape(new Circle(color,
+                                        e.getPoint(),
+                                        (int) (100*(Math.floor(Math.random()*(200-0+1)+0)/100))));
+                   }
+                    else if (shapeType == ShapeType.OVAL){
+                       if (!israndomized)
+                    	scene.addShape(new Oval(color,
                                 e.getPoint(),
                                 100));
-                    } else if (shapeType == ShapeType.RECTANGLE) {
+                       if (israndomized)
+                       	scene.addShape(new Oval(color,
+                                   e.getPoint(),
+                                   (int) (100*(Math.floor(Math.random()*(200-0+1)+0)/100))));
+                    }else if (shapeType == ShapeType.RECTANGLE) {
                         scene.addShape(new Rectangle(
                                 e.getPoint(),
                                 100, 
@@ -239,14 +264,14 @@ public class DrawShapes extends JFrame
                 color = Color.RED;
 			}
 		});
-	//green color
-		 addToMenu(colorMenu, "Green", new ActionListener() {
+        
+        addToMenu(colorMenu, "Green", new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String text=e.getActionCommand();
                 System.out.println(text);
                 // change the color instance variable to red
-                color = Color.green;
+                color = Color.GREEN;
 			}
 		});
         
@@ -281,6 +306,15 @@ public class DrawShapes extends JFrame
                 shapeType = ShapeType.CIRCLE;
             }
         });
+        // oval
+        addToMenu(shapeMenu, "Oval", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Oval");
+                shapeType = ShapeType.OVAL;
+            }
+        });
+        
         
         
         // operation mode menu
@@ -315,6 +349,12 @@ public class DrawShapes extends JFrame
                 System.out.println(text);
             }
         });
+        // randomize
+        addToMenu(operationModeMenu, "Randomize", new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                israndomized=!israndomized;
+            }
+        });
         
 
         // set the menu bar for this frame
@@ -347,6 +387,11 @@ public class DrawShapes extends JFrame
             public void keyReleased(KeyEvent e){
             	// Called when you release a key and it goes up
             	System.out.println("key released: " + e.getKeyChar());
+            	if (e.getKeyChar()=='c'){
+            		Color x = new Color(rand.nextInt(255),rand.nextInt(255),rand.nextInt(255));
+            		setBackground(x);
+            	}
+            	
             }
             public void keyTyped(KeyEvent e) {
             	// Gets called when you push a key down and then release it,
@@ -358,6 +403,7 @@ public class DrawShapes extends JFrame
             	repaint();
             }
         });
+        
     }
     
     /**
